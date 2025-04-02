@@ -1,19 +1,22 @@
 # hello_world_flutter
 
-A Hello World Flutter project
+A Hello World OpenAI Realtime (via WebRTC) Flutter project
 
-Created 2025/03/18 following the guide at:
+Initially created 2025/03/18 following the guide at:
 https://docs.flutter.dev/get-started/install/macos/mobile-android
 
-## Getting Started
+Then add:
+* https://github.com/flutter-webrtc/flutter-webrtc
+  `flutter pub add flutter_webrtc`
+* https://github.com/davidmigloz/langchain_dart/tree/main/packages/openai_realtime_dart
+  `flutter pub add openai_realtime_dart`
 
-This project is a starting point for a Flutter application.
+My plan if for this to be a very light weight version of:
+* https://github.com/swooby/AlfredAI
+That is a non-trivial Android(Mobile) + Wear(Watch) remote control app that
+uses a Foreground service to run in the background.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This app is planned to be much simpler, more similar to:
+* https://github.com/swooby/openai-realtime-push-to-talk/
+That is just a fairly simple web app that uses WebRTC to connect and use
+OpenAI Realtime. 
