@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.swooby.hello_world_flutter"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973" // flutter.ndkVersion // 26.3.11579264, but dependencies want 27.0.12077973
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

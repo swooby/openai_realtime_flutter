@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world_flutter/push_to_talk_widget.dart';
+import 'package:logging/logging.dart';
+import 'package:openai_realtime_dart/openai_realtime_dart.dart';
+
+final _log = Logger('main');
 
 void main() {
   runApp(const MyApp());
@@ -45,28 +49,72 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isConnected = false;
   bool isCancelingResponse = false;
 
-  void connect() {
-    print('connect()');
-    setState(() {
-      isConnectingOrConnected = true;
-    });
-    // Simulate connection delay...
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      bool success = true;
-      if (success) {
-        print("Connection established!");
-        setState(() {
-          isConnected = true;
-        });
-      } else {
-        print("Connection failed!");
-        disconnect();
+  RealtimeClient? client;
+
+  _MyHomePageState() {
+    _tryInitializeRealtimeClient();
+  }
+
+  void _tryInitializeRealtimeClient() async {
+    const String openaiApiKey = String.fromEnvironment('OPENAI_API_KEY');
+    _log.info('_tryInitializeRealtimeClient: openaiApiKey: "$openaiApiKey"');
+    client = RealtimeClient(
+        transportType: RealtimeTransportType.websocket,
+        apiKey: openaiApiKey,
+        debug: true,
+    );
+    await client!.updateSession(
+      turnDetection: TurnDetection(
+        type: TurnDetectionType.serverVad,
+      ),
+      inputAudioTranscription: InputAudioTranscriptionConfig(
+        model: 'whisper-1',
+      ),
+    );
+    client!.on(RealtimeEventType.all, (event) {
+      switch (event.type) {
+        case RealtimeEventType.sessionCreated:
+          setState(() {
+            isConnected = true;
+          });
+          break;
+        default:
+          // ignore
+          break;
       }
     });
   }
 
+  Future<void> connect() async {
+    _log.info('connect()');
+    setState(() {
+      isConnectingOrConnected = true;
+    });
+    // Simulate connection delay...
+    final client = this.client;
+    if (client != null) {
+      _log.info('connect: Real attempt to connect...');
+      await client.connect();
+    } else {
+      _log.info('connect: Simulate connection...');
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        bool success = true;
+        if (success) {
+          _log.info("Connection established!");
+          setState(() {
+            isConnected = true;
+          });
+        } else {
+          _log.info("Connection failed!");
+          disconnect();
+        }
+      });
+    }
+  }
+
   void disconnect() {
-    print('disconnect()');
+    _log.info('disconnect()');
+    client?.disconnect();
     setState(() {
       pttState = PttState.disabled;
       isCancelingResponse = false;
@@ -76,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void startPushToTalk() {
-    print('startPushToTalk()');
+    _log.info('startPushToTalk()');
     // Implement your logic to start push-to-talk
     setState(() {
       pttState = PttState.pressed;
@@ -84,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void stopPushToTalk() {
-    print('stopPushToTalk()');
+    _log.info('stopPushToTalk()');
     // Implement your logic to stop push-to-talk
     setState(() {
       pttState = PttState.idle;
@@ -98,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          Switch(value: isConnected, onChanged: (bool newValue) {
+          Switch(value: isConnectingOrConnected, onChanged: (bool newValue) {
             if (newValue) {
               connect();
             } else {
