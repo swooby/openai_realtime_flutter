@@ -20,3 +20,9 @@ This app is planned to be much simpler, more similar to:
 * https://github.com/swooby/openai-realtime-push-to-talk/
 That is just a fairly simple web app that uses WebRTC to connect and use
 OpenAI Realtime. 
+
+# Development
+
+1. `flutter pub get`
+2. Open Run > Edit Configurations...
+3. In the Additional run args field, add: `--dart-define=OPENAI_API_KEY="your_api_key_here"`
