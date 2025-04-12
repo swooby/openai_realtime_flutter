@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_world_flutter/push_to_talk_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:openai_realtime_dart/openai_realtime_dart.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 final _log = Logger('main');
 
@@ -56,6 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _tryInitializeRealtimeClient() async {
+    final micStatus = await Permission.microphone.request();
+    if (!micStatus.isGranted) {
+      throw Exception('Microphone permission not granted');
+    }
+
     const String openaiApiKey = String.fromEnvironment('OPENAI_API_KEY');
     _log.info('_tryInitializeRealtimeClient: openaiApiKey: "$openaiApiKey"');
     client = RealtimeClient(
