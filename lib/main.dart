@@ -59,9 +59,9 @@ class _MyHomePageState extends State<MyHomePage> {
     const String openaiApiKey = String.fromEnvironment('OPENAI_API_KEY');
     _log.info('_tryInitializeRealtimeClient: openaiApiKey: "$openaiApiKey"');
     client = RealtimeClient(
-        transportType: RealtimeTransportType.websocket,
-        apiKey: openaiApiKey,
-        debug: true,
+      transportType: RealtimeTransportType.webrtc,
+      apiKey: openaiApiKey,
+      debug: true,
     );
     await client!.updateSession(
       turnDetection: TurnDetection(
