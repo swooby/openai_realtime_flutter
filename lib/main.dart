@@ -70,9 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       debug: true,
     );
     await client!.updateSession(
-      turnDetection: TurnDetection(
-        type: TurnDetectionType.serverVad,
-      ),
+      turnDetection: TurnDetection(type: TurnDetectionType.serverVad),
       inputAudioTranscription: InputAudioTranscriptionConfig(
         model: 'whisper-1',
       ),
@@ -118,9 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void disconnect() {
+  Future<void> disconnect() async {
     _log.info('disconnect()');
-    client?.disconnect();
+    await client?.disconnect();
     setState(() {
       pttState = PttState.disabled;
       isCancelingResponse = false;
@@ -129,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void startPushToTalk() {
+  void startPushToTalk() async {
     _log.info('startPushToTalk()');
     // Implement your logic to start push-to-talk
     setState(() {
@@ -137,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void stopPushToTalk() {
+  void stopPushToTalk() async {
     _log.info('stopPushToTalk()');
     // Implement your logic to stop push-to-talk
     setState(() {
@@ -152,20 +150,20 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          Switch(value: isConnectingOrConnected, onChanged: (bool newValue) {
-            if (newValue) {
-              connect();
-            } else {
-              disconnect();
-            }
-          })
+          Switch(
+            value: isConnectingOrConnected,
+            onChanged: (bool newValue) async {
+              if (newValue) {
+                await connect();
+              } else {
+                await disconnect();
+              }
+            },
+          ),
         ],
       ),
       body: Center(
         child: Column(
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             PushToTalkWidget(
